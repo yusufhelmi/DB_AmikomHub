@@ -2,7 +2,6 @@
 
 @section('content')
 
-<!-- Hero Section (Tetap sama seperti punyamu) -->
 <section class="max-w-7xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-12">
     <div class="flex-1 space-y-8">
         <span class="inline-block px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold uppercase tracking-wider">#1 Event Platform</span>
@@ -42,7 +41,23 @@
     </div>
 </section>
 
-<!-- Events Grid (Sudah Dinamis) -->
+<section class="max-w-7xl mx-auto px-6 py-12 border-t border-slate-100 mt-10">
+    <p class="text-center text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">
+        Didukung Oleh Partner Terbaik Kami
+    </p>
+    <div class="flex flex-wrap justify-center items-center gap-10 md:gap-16">
+        @forelse($partners as $partner)
+            <div class="group flex items-center justify-center">
+                <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}" 
+                     class="h-14 w-auto object-contain grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" 
+                     title="{{ $partner->name }}">
+            </div>
+        @empty
+            <p class="text-sm text-slate-400 italic">Belum ada partner yang terdaftar.</p>
+        @endforelse
+    </div>
+</section>
+
 <section id="events" class="max-w-7xl mx-auto px-6 py-20">
     <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
         <div>
@@ -50,7 +65,6 @@
             <p class="text-slate-500 font-medium">Jangan sampai ketinggalan acara seru minggu ini!</p>
         </div>
 
-        <!-- Filter Kategori Dinamis -->
         <div class="flex flex-wrap gap-2">
             <a href="/" class="px-5 py-3 {{ !request()->has('category') ? 'bg-indigo-600 text-white shadow-md' : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:shadow-sm' }} rounded-xl transition font-bold text-sm">
                 Semua Kategori
@@ -64,14 +78,11 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Looping Data Event dari Database -->
         @forelse($events as $event)
         <div class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
             <div class="relative overflow-hidden aspect-[3/4]">
-                <!-- Menampilkan gambar jika ada, jika tidak pakai placeholder -->
                 <img src="{{ $event->poster_path ? asset('storage/' . $event->poster_path) : 'https://placehold.co/400x500?text=No+Image' }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
 
-                <!-- Pemanggilan Nama Kategori Relasi -->
                 <div class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600 shadow-sm">
                     {{ $event->category->name ?? 'Umum' }}
                 </div>
@@ -83,12 +94,10 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <!-- Format tanggal menggunakan Carbon -->
                     <span>{{ \Carbon\Carbon::parse($event->date)->format('d M Y, H:i') }}</span>
                 </div>
 
                 <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center">
-                    <!-- Format harga Rupiah atau Gratis -->
                     <span class="text-2xl font-black text-indigo-600">
                         {{ $event->price == 0 ? 'Gratis' : 'Rp ' . number_format($event->price, 0, ',', '.') }}
                     </span>
@@ -99,7 +108,6 @@
             </div>
         </div>
         @empty
-        <!-- Tampilan jika tidak ada event pada kategori yang dipilih -->
         <div class="col-span-full py-20 text-center">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
                 <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
