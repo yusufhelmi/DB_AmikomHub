@@ -41,20 +41,27 @@
     </div>
 </section>
 
-<section class="max-w-7xl mx-auto px-6 py-12 border-t border-slate-100 mt-10">
-    <p class="text-center text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">
-        Didukung Oleh Partner Terbaik Kami
-    </p>
-    <div class="flex flex-wrap justify-center items-center gap-10 md:gap-16">
-        @forelse($partners as $partner)
-            <div class="group flex items-center justify-center">
-                <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}" 
-                     class="h-14 w-auto object-contain grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" 
-                     title="{{ $partner->name }}">
+<section class="py-24 bg-slate-50 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-sm font-black tracking-widest text-indigo-600 uppercase mb-3">Didukung Oleh</h2>
+            <p class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Partner Terbaik Kami</p>
+            <p class="mt-4 text-lg text-slate-500 max-w-2xl mx-auto">
+                Berkolaborasi dengan institusi dan perusahaan terkemuka untuk menyajikan pengalaman event yang tak terlupakan.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 justify-center items-center">
+            @forelse($partners as $partner)
+            <div class="col-span-1 flex justify-center items-center h-32 p-6 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-indigo-100 hover:-translate-y-2 transition-all duration-300 group cursor-pointer">
+                <img src="{{ $partner->logo_url }}" alt="Logo {{ $partner->name }}" class="max-h-full max-w-full object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-105">
             </div>
-        @empty
-            <p class="text-sm text-slate-400 italic">Belum ada partner yang terdaftar.</p>
-        @endforelse
+            @empty
+            <div class="col-span-full flex justify-center py-8">
+                <p class="text-slate-500 font-medium bg-white px-8 py-4 rounded-2xl shadow-sm border border-slate-100">Belum ada data partner yang ditambahkan.</p>
+            </div>
+            @endforelse
+        </div>
     </div>
 </section>
 

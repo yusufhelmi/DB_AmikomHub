@@ -1,13 +1,17 @@
 <?php
+
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['name', 'slug'];
 
-    // Menandakan atribut: 1 Kategori dapat memiliki banyak list Event
+    // Relasi ke event (jika diperlukan nanti)
     public function events()
     {
         return $this->hasMany(Event::class);
