@@ -1,35 +1,28 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
-use App\Http\Controllers\Admin\EventController as EventAdminController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\CategoryController;
 
-Route::delete('/admin/partners/{partner}', [PartnerController::class, 'destroy'])->name('admin.partners.destroy');
-Route::get('/admin/partners/create', [PartnerController::class, 'create'])->name('admin.partners.create');
-Route::post('/admin/partners', [PartnerController::class, 'store'])->name('admin.partners.store');
-Route::get('/admin/partners', [PartnerController::class, 'index'])->name('admin.partners.index');
-Route::get('/admin/partners/{partner}/edit', [PartnerController::class, 'edit'])->name('admin.partners.edit');
-Route::put('/admin/partners/{partner}', [PartnerController::class, 'update'])->name('admin.partners.update');
+// Admin Controllers
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController as EventAdminController;
+use App\Http\Controllers\Admin\AuthController;
+
+// ==========================================
+// RUTE PUBLIK (Halaman Depan / Bebas Akses)
+// ==========================================
+// Rute jebakan untuk middleware auth bawaan Laravel
+Route::get('/login', function () {
+    return redirect()->route('admin.login');
+})->name('login');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/event/1', [EventController::class, 'show'])->name('events.show');
 Route::get('/checkout', [EventController::class, 'checkout'])->name('checkout');
 Route::get('/my-ticket', [TicketController::class, 'ticket'])->name('ticket');
-
-
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/events', [DashboardController::class, 'indexAdmin'])->name('events.index');
-    Route::get('/transactions', [DashboardController::class, 'transactionsAdmin'])->name('transactions.index');
-});
-
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('events', EventAdminController::class);
-});
 
 Route::get('/profil', function() {
     return view('profil');
@@ -43,10 +36,36 @@ Route::get('/bantuan', function() {
     return view('bantuan');
 });
 
-//buat kategori di admin
-Route::get('/admin/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
-Route::get('/admin/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
-Route::post('/admin/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
-Route::get('/admin/categories/{category}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
-Route::put('/admin/categories/{category}', [CategoryController::class, 'update'])->name('admin.categories.update');
-Route::delete('/admin/categories/{category}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
+
+// ==========================================
+// RUTE ADMINISTRATOR (Panel Admin)
+// ==========================================
+
+// Jika user mengakses '/admin' saja, arahkan ke dashboard (nanti middleware akan mencegat kalau belum login)
+Route::get('/admin', function () {
+    return redirect()->route('admin.dashboard');
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    
+    // Rute Auth (Login & Logout) - Bebas diakses tanpa perlu login
+    Route::get('login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('login', [AuthController::class, 'login'])->name('login.post');
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+    // 🔒 MENGAMANKAN ROUTE ADMINISTRASI DI BALIK TEMBOK (MIDDLEWARE) 🔒
+    Route::middleware(['auth', 'admin'])->group(function () {
+        
+        // Halaman Dashboard Utama Admin
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Halaman Laporan Transaksi
+        Route::get('transactions', [DashboardController::class, 'transactionsAdmin'])->name('transactions.index');
+        
+        // Fitur Kelola CRUD (Otomatis mencakup route index, create, store, edit, update, destroy)
+        Route::resource('events', EventAdminController::class);
+        Route::resource('categories', CategoryController::class);
+        Route::resource('partners', PartnerController::class);
+        
+    });
+});
