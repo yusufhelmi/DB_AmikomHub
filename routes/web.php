@@ -15,12 +15,17 @@ use App\Http\Controllers\Admin\AuthController;
 // ==========================================
 // RUTE PUBLIK (Halaman Depan / Bebas Akses)
 // ==========================================
+
 // Rute jebakan untuk middleware auth bawaan Laravel
 Route::get('/login', function () {
     return redirect()->route('admin.login');
 })->name('login');
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/event/1', [EventController::class, 'show'])->name('events.show');
+
+// Rute Detail Event (Modul 9)
+Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+
 Route::get('/checkout', [EventController::class, 'checkout'])->name('checkout');
 Route::get('/my-ticket', [TicketController::class, 'ticket'])->name('ticket');
 
@@ -41,7 +46,6 @@ Route::get('/bantuan', function() {
 // RUTE ADMINISTRATOR (Panel Admin)
 // ==========================================
 
-// Jika user mengakses '/admin' saja, arahkan ke dashboard (nanti middleware akan mencegat kalau belum login)
 Route::get('/admin', function () {
     return redirect()->route('admin.dashboard');
 });
@@ -62,10 +66,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Halaman Laporan Transaksi
         Route::get('transactions', [DashboardController::class, 'transactionsAdmin'])->name('transactions.index');
         
-        // Fitur Kelola CRUD (Otomatis mencakup route index, create, store, edit, update, destroy)
+        // Fitur Kelola CRUD 
         Route::resource('events', EventAdminController::class);
         Route::resource('categories', CategoryController::class);
         Route::resource('partners', PartnerController::class);
         
-    });
-});
+    }); // <-- Penutup group middleware
+}); // <-- Penutup group prefix admin (Biasanya ini yang tidak sengaja terhapus)
